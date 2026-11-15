@@ -54,6 +54,7 @@ def main(argv: list[str] | None = None) -> int:
         dtype=None,
         load_in_4bit=True,
         fast_inference=False,
+        token=os.environ.get("HF_TOKEN"),
     )
     configure_tokenizer_and_eos(tokenizer, model)
 
@@ -68,7 +69,7 @@ def main(argv: list[str] | None = None) -> int:
         random_state=42,
     )
 
-    ds = load_dataset(args.dataset, "grpo_pool", split="train").shuffle(seed=42)
+    ds = load_dataset(args.dataset, "grpo_pool", split="train", token=os.environ.get("HF_TOKEN")).shuffle(seed=42)
 
     args.drive_dir.mkdir(parents=True, exist_ok=True)
     resume = latest_checkpoint(args.drive_dir)

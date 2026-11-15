@@ -47,19 +47,30 @@ def configure_tokenizer_and_eos(tokenizer, model=None) -> tuple[int, list[int]]:
 
 
 def load_colab_secrets() -> None:
-    """Load HF_TOKEN and WANDB_API_KEY from Colab Secrets into os.environ if present."""
+    """Load HF_TOKEN and WANDB_API_KEY from Colab Secrets into os.environ and log into HF Hub."""
     try:
         from google.colab import userdata  # type: ignore
     except ImportError:
-        return
-    for key in ("HF_TOKEN", "WANDB_API_KEY"):
-        if not os.environ.get(key):
-            try:
-                val = userdata.get(key)
-                if val:
-                    os.environ[key] = val
-            except Exception:
-                pass
+        userdata = None
+    if userdata is not None:
+        for key in ("HF_TOKEN", "WANDB_API_KEY"):
+            if not os.environ.get(key):
+                try:
+                    val = userdata.get(key)
+                    if val:
+                        os.environ[key] = val
+                except Exception:
+                    pass
+    hf_tok = os.environ.get("HF_TOKEN")
+    if hf_tok:
+        try:
+            from huggingface_hub import login
+
+            login(token=hf_tok, add_to_git_credential=False)
+        except Exception:
+            pass
+    else:
+        print("WARNING: HF_TOKEN is not set in environment; private HF repos will fail to load.")
 
 
 def setup_wandb(project: str = "gpqa-ninja", run_name: str = "run", config: dict | None = None) -> str:

@@ -28,7 +28,7 @@ def run_heldout_eval(
     from unsloth import FastLanguageModel
 
     FastLanguageModel.for_inference(model)
-    ds = load_dataset(dataset_repo, split_config, split="train")
+    ds = load_dataset(dataset_repo, split_config, split="train", token=__import__("os").environ.get("HF_TOKEN"))
     if max_samples and len(ds) > max_samples:
         ds = ds.select(range(max_samples))
 

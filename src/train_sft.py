@@ -66,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
         random_state=42,
     )
 
-    ds = load_dataset(args.dataset, "sft_train", split="train")
+    ds = load_dataset(args.dataset, "sft_train", split="train", token=os.environ.get("HF_TOKEN"))
     if args.max_samples > 0:
         ds = ds.select(range(min(args.max_samples, len(ds))))
 
