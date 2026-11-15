@@ -27,7 +27,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--init-model", required=True, help="HF repo of D1 or S1 checkpoint")
     p.add_argument("--dataset", default="BabyWombat/gpqa-ninja-mix")
     p.add_argument("--push-model", required=True, help="HF repo to push merged fp16 GRPO model")
-    p.add_argument("--drive-dir", type=Path, default=Path("/content/drive/MyDrive/gpqa_ninja/grpo"))
+    p.add_argument("--drive-dir", type=Path, default=Path("/content/ckpt/grpo"))
+    p.add_argument("--ckpt-repo", default=None, help="Optional private HF repo for intermediate checkpoints")
     p.add_argument("--lora-r", type=int, default=32)
     p.add_argument("--max-prompt-len", type=int, default=1024)
     p.add_argument("--max-completion-len", type=int, default=1536)
@@ -98,6 +99,10 @@ def main(argv: list[str] | None = None) -> int:
         log_completions=False,  # Never log completions to W&B
         report_to=report_to,
         seed=42,
+        push_to_hub=bool(args.ckpt_repo),
+        hub_model_id=args.ckpt_repo,
+        hub_strategy="checkpoint" if args.ckpt_repo else "end",
+        hub_private_repo=True,
     )
 
     trainer = GRPOTrainer(

@@ -26,7 +26,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--init-model", required=True, help="HF repo of S1 checkpoint")
     p.add_argument("--dataset", default="BabyWombat/gpqa-ninja-mix")
     p.add_argument("--push-model", required=True, help="HF repo to push merged fp16 DPO model")
-    p.add_argument("--drive-dir", type=Path, default=Path("/content/drive/MyDrive/gpqa_ninja/dpo"))
+    p.add_argument("--drive-dir", type=Path, default=Path("/content/ckpt/dpo"))
+    p.add_argument("--ckpt-repo", default=None, help="Optional private HF repo for intermediate checkpoints")
     p.add_argument("--lora-r", type=int, default=32)
     p.add_argument("--max-seq-len", type=int, default=2048)
     p.add_argument("--max-steps", type=int, default=-1)
@@ -104,6 +105,10 @@ def main(argv: list[str] | None = None) -> int:
         optim="adamw_8bit",
         report_to=report_to,
         seed=42,
+        push_to_hub=bool(args.ckpt_repo),
+        hub_model_id=args.ckpt_repo,
+        hub_strategy="checkpoint" if args.ckpt_repo else "end",
+        hub_private_repo=True,
     )
 
     trainer = DPOTrainer(

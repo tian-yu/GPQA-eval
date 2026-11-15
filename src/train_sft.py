@@ -28,7 +28,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--base-model", default="Qwen/Qwen3-4B-Base")
     p.add_argument("--dataset", default="BabyWombat/gpqa-ninja-mix")
     p.add_argument("--push-model", required=True, help="HF repo to push merged fp16 model")
-    p.add_argument("--drive-dir", type=Path, default=Path("/content/drive/MyDrive/gpqa_ninja/sft"))
+    p.add_argument("--drive-dir", type=Path, default=Path("/content/ckpt/sft"))
+    p.add_argument("--ckpt-repo", default=None, help="Optional private HF repo for intermediate checkpoints")
     p.add_argument("--lora-r", type=int, default=64)
     p.add_argument("--max-seq-len", type=int, default=2560)
     p.add_argument("--max-steps", type=int, default=-1)
@@ -100,6 +101,10 @@ def main(argv: list[str] | None = None) -> int:
         dataset_text_field="text",
         report_to=report_to,
         seed=42,
+        push_to_hub=bool(args.ckpt_repo),
+        hub_model_id=args.ckpt_repo,
+        hub_strategy="checkpoint" if args.ckpt_repo else "end",
+        hub_private_repo=True,
     )
 
     trainer = SFTTrainer(model=model, processing_class=tokenizer, train_dataset=ds, args=sft_args)
