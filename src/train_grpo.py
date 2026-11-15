@@ -41,9 +41,9 @@ def main(argv: list[str] | None = None) -> int:
     load_colab_secrets()
     report_to = setup_wandb(project="gpqa-ninja", run_name=f"grpo-{args.init_model.split('/')[-1]}", config=vars(args))
 
+    from unsloth import FastLanguageModel
     from datasets import load_dataset
     from trl import GRPOConfig, GRPOTrainer
-    from unsloth import FastLanguageModel
 
     t0 = time.time()
     max_seq_len = args.max_prompt_len + args.max_completion_len

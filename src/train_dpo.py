@@ -40,9 +40,9 @@ def main(argv: list[str] | None = None) -> int:
     load_colab_secrets()
     report_to = setup_wandb(project="gpqa-ninja", run_name=f"dpo-{args.init_model.split('/')[-1]}", config=vars(args))
 
+    from unsloth import FastLanguageModel, PatchDPOTrainer
     from datasets import load_dataset
     from trl import DPOConfig, DPOTrainer
-    from unsloth import FastLanguageModel, PatchDPOTrainer
 
     PatchDPOTrainer()
     t0 = time.time()

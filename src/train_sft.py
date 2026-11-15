@@ -41,10 +41,10 @@ def main(argv: list[str] | None = None) -> int:
     load_colab_secrets()
     report_to = setup_wandb(project="gpqa-ninja", run_name=f"sft-{args.base_model.split('/')[-1]}", config=vars(args))
 
-    from datasets import load_dataset
-    from trl import SFTConfig, SFTTrainer
     from unsloth import FastLanguageModel
     from unsloth.chat_templates import train_on_responses_only
+    from datasets import load_dataset
+    from trl import SFTConfig, SFTTrainer
 
     t0 = time.time()
     model, tokenizer = FastLanguageModel.from_pretrained(
